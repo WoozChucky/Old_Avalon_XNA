@@ -32,7 +32,7 @@ namespace Avalon
                     Image.Path = "Gameplay/Projectiles/arrow_right";
                     break;
             }
-            
+
             DirectionKey = lastKey;
 
             if (obj.GetType() == typeof(Player))
