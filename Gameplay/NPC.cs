@@ -20,8 +20,10 @@ namespace Avalon
         public Rectangle FOV;
         public int Aggro;
 
-        float timer = 1.5f;
-        const float TIMER = 1.5f;
+        private Vector2 directionToPlayer;
+
+        float timer = 5f;
+        const float TIMER = 5f;
 
         public virtual void LoadContent()
         {
@@ -37,49 +39,61 @@ namespace Avalon
         private void SeekPlayer(Player player)
         {
             Image.IsActive = true;
-            Vector2 directionToPlayer = player.Image.Position - Image.Position;
+
+            directionToPlayer = player.Image.Position - Image.Position;
             directionToPlayer.Normalize();
 
-            Velocity = directionToPlayer / 2;
+            if (directionToPlayer.X > 0)
+            {
+                if (directionToPlayer.X > directionToPlayer.Y)
+                {
+                    directionToPlayer.Y = 0;
+                }
+                else
+                {
+                    directionToPlayer.X = 0;
+                }
+            }
+            else if (directionToPlayer.X < 0)
+            {
+                if (directionToPlayer.X < directionToPlayer.Y)
+                {
+                    directionToPlayer.Y = 0;
+                }
+                else
+                {
+                    directionToPlayer.X = 0;
+                }
+            }
+            else if (directionToPlayer.Y > 0)
+            {
+                if (directionToPlayer.Y > directionToPlayer.X)
+                {
+                    directionToPlayer.Y = 0;
+                }
+                else
+                {
+                    directionToPlayer.X = 0;
+                }
+            }
+            else if (directionToPlayer.Y < 0)
+            {
+                if (directionToPlayer.Y < directionToPlayer.X)
+                {
+                    directionToPlayer.Y = 0;
+                }
+                else
+                {
+                    directionToPlayer.X = 0;
+                }
+            }
+
+            Velocity = directionToPlayer;
+
 
             Image.Position += Velocity;
 
             UpdateFOV();
-
-            //if (Velocity.X == 0)
-            //{
-            //    if (InputManager.Instance.KeyDown(Keys.Down))
-            //    {
-            //        Velocity.Y = MoveSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //        Image.SpriteSheetEffect.CurrentFrame.Y = 0;
-            //    }
-            //    else if (InputManager.Instance.KeyDown(Keys.Up))
-            //    {
-            //        Velocity.Y = -MoveSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //        Image.SpriteSheetEffect.CurrentFrame.Y = 3;
-            //    }
-            //    else
-            //        Velocity.Y = 0;
-            //}
-
-            //if (Velocity.Y == 0)
-            //{
-            //    if (InputManager.Instance.KeyDown(Keys.Right))
-            //    {
-            //        Velocity.X = MoveSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //        Image.SpriteSheetEffect.CurrentFrame.Y = 2;
-            //    }
-            //    else if (InputManager.Instance.KeyDown(Keys.Left))
-            //    {
-            //        Velocity.X = -MoveSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //        Image.SpriteSheetEffect.CurrentFrame.Y = 1;
-            //    }
-            //    else
-            //        Velocity.X = 0;
-            //}
-
-            //if (Velocity.X == 0 && Velocity.Y == 0)
-            //    Image.IsActive = false;
         }
 
         private bool PlayerInFOV(Player player)
@@ -91,12 +105,16 @@ namespace Avalon
         private void Wander(GameTime gameTime)
         {
             Random random = new Random();
-            int action = random.Next(0, 3);
+            
 
+     
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
             timer -= elapsed;
             if (timer < 0)
             {
+                int action = random.Next(0, 3);
+                Console.WriteLine("Random = " + action.ToString());
+
                 Image.IsActive = true;
                 
                 switch (action)
@@ -105,32 +123,37 @@ namespace Avalon
                        // if (Velocity.X == 0)
                         //{
                             Velocity.Y = MoveSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds / 10;
+                            Velocity.X = 0;
                             Image.SpriteSheetEffect.CurrentFrame.Y = 0;
-                            //Console.WriteLine("Moving Down");
+                            
+                            Console.WriteLine("Moving Down");
                         //}
                         break;
                     case 1: //UP
                        // if (Velocity.X == 0)
                         //{
                             Velocity.Y = -MoveSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds / 10;
+                            Velocity.X = 0;
                             Image.SpriteSheetEffect.CurrentFrame.Y = 3;
-                            //Console.WriteLine("Moving Up");
+                            Console.WriteLine("Moving Up");
                        // }
                         break;
                     case 2: //RIGHT
                       //  if (Velocity.Y == 0)
                        // {
                             Velocity.X = MoveSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds / 10;
+                        Velocity.Y = 0;
                             Image.SpriteSheetEffect.CurrentFrame.Y = 2;
-                            //Console.WriteLine("Moving Right");
+                            Console.WriteLine("Moving Right");
                        // }
                         break;
                     case 3: //LEFT
                        // if (Velocity.Y == 0)
                        // {
                             Velocity.X = -MoveSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds / 10;
-                            Image.SpriteSheetEffect.CurrentFrame.Y = 1;
-                            //Console.WriteLine("Moving Left");
+                        Velocity.Y = 0;
+                        Image.SpriteSheetEffect.CurrentFrame.Y = 1;
+                            Console.WriteLine("Moving Left");
                        // }
                         break;
                 }
@@ -151,20 +174,18 @@ namespace Avalon
 
         public virtual void Update(GameTime gameTime, ref Player player)
         {
-            Wander(gameTime);
             switch (NPCType)
             {
                 case "Aggressive":
 
-                    if (!PlayerInFOV(player))
-                    {
-                        Wander(gameTime);
-                    }
-                    else
-                    {
+                    //if (!PlayerInFOV(player))
+                    //    Wander(gameTime);
+                    //else
                         SeekPlayer(player);
-                    }
-                        
+                    break;
+
+                case "Passive":
+
                     break;
                 default:
                     break;

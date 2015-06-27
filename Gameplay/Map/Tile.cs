@@ -72,7 +72,7 @@ namespace Avalon
                             npc.Image.Position.X = tileRect.Left - npc.Image.SourceRect.Width;
                         else if (npc.Velocity.Y < 0)
                             npc.Image.Position.Y = tileRect.Bottom;
-                        else
+                        else if (npc.Velocity.Y > 0)
                             npc.Image.Position.Y = tileRect.Top - npc.Image.SourceRect.Height;
 
                         npc.Velocity = Vector2.Zero;

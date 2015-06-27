@@ -58,6 +58,7 @@ dlldata.c
 *.scc
 *.exe
 *.manifest
+*.vshost
 
 # Chutzpah Test files
 _Chutzpah*

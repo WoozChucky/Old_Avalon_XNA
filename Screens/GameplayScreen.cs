@@ -6,6 +6,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Avalon
 {
@@ -15,6 +17,9 @@ namespace Avalon
         Map map;
         SpriteFont font;
         private bool showPlayerInfo;
+        Song music;
+        SoundEffect arrowSound;
+
         public override void LoadContent()
         {
             base.LoadContent();
@@ -25,12 +30,15 @@ namespace Avalon
             map = mapLoader.Load("Load/Gameplay/Maps/Map1.xml");
             player = playerLoader.Load("Load/Gameplay/Player.xml");
 
-            //Console.Write(map.NPC[0].NPCType);
-
             player.LoadContent();
             map.LoadContent();
 
             font = content.Load<SpriteFont>("Fonts/MorrisRoman");
+            music = content.Load<Song>("Sound/CitySound");
+            arrowSound = content.Load<SoundEffect>("Sound/Arrow");
+
+            MediaPlayer.Play(music);
+            MediaPlayer.IsRepeating = true;
 
             showPlayerInfo = false;
         }
@@ -47,6 +55,9 @@ namespace Avalon
             base.Update(gameTime);
             player.Update(gameTime);
             map.Update(gameTime, ref player);
+
+            if (InputManager.Instance.KeyPressed(Keys.D))
+                arrowSound.Play();
 
             if(InputManager.Instance.KeyPressed(Keys.Z))
             {
